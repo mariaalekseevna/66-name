@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест - Чат-боты на Python</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .test-header {
+            background: #7CB9E8;
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+        }
+        .test-header h2 {
+            margin: 0;
+        }
+        .question-area {
+            padding: 2rem;
+        }
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        .answer-option {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .answer-option:hover {
+            background: #e8f0fe;
+            border-color: #7CB9E8;
+        }
+        .answer-option.selected {
+            background: #7CB9E8;
+            color: white;
+            border-color: #7CB9E8;
+        }
+        .test-footer {
+            background: #f9f9f9;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+        }
+        .progress {
+            font-weight: 600;
+            color: #7CB9E8;
+        }
+        .score {
+            font-weight: 600;
+        }
+        .next-btn {
+            background: #7CB9E8;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .next-btn:hover {
+            background: #5a9fd4;
+        }
+        .result-area {
+            padding: 2rem;
+            text-align: center;
+        }
+        .result-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #7CB9E8;
+            margin: 1rem 0;
+        }
+        .restart-btn {
+            background: #7CB9E8;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo"> Python ChatBot Course</div>
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="lessons.html">Уроки</a></li>
+                <li><a href="test.html" class="active">Тест</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div id="testApp"></div>
+    </main>
+
+    <footer>
+        <p>© 2025 | Обучающий курс по созданию чат-ботов на Python</p>
+    </footer>
+
+    <script>
+        // ========== ВОПРОСЫ (7 штук) ==========
+        const questions = [
+            {
+                text: "Где нужно создать бота, чтобы получить токен для Telegram-бота?",
+                answers: ["В настройках Python", "Через специальную программу", "У @BotFather в Telegram", "На GitHub"],
+                correct: 2
+            },
+            {
+                text: "Какая библиотека чаще всего используется для создания Telegram-ботов в Python?",
+                answers: ["requests", "python-telegram-bot", "django", "flask"],
+                correct: 1
+            },
+            {
+                text: "Какой обработчик отвечает за команды вроде /start?",
+                answers: ["MessageHandler", "CallbackQueryHandler", "CommandHandler", "ErrorHandler"],
+                correct: 2
+            },
+            {
+                text: "Как правильно запустить бота после создания всех обработчиков?",
+                answers: ["bot.start()", "app.run()", "app.polling()", "app.run_polling()"],
+                correct: 3
+            },
+            {
+                text: "Что такое токен бота?",
+                answers: ["Имя бота", "Уникальный ключ доступа к API бота", "Пароль от аккаунта", "Номер телефона"],
+                correct: 1
+            },
+            {
+                text: "Какую команду нужно ввести в терминале для установки библиотеки python-telegram-bot?",
+                answers: ["install python-bot", "pip install python-telegram-bot", "pip install telegram", "npm install python-bot"],
+                correct: 1
+            },
+            {
+                text: "Какой метод используется для отправки сообщения в python-telegram-bot?",
+                answers: ["send()", "send_message()", "reply_text()", "message.send()"],
+                correct: 2
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let testFinished = false;
+
+        function render() {
+            const app = document.getElementById('testApp');
+            
+            if (testFinished) {
+                // Подсчёт правильных ответов
+                let correctCount = 0;
+                for (let i = 0; i < questions.length; i++) {
+                    if (userAnswers[i] === questions[i].correct) {
+                        correctCount++;
+                    }
+                }
+                const percentage = Math.round((correctCount / questions.length) * 100);
+                
+                let message = "";
+                if (correctCount === 7) message = " Отлично! Вы эксперт по чат-ботам!";
+                else if (correctCount >= 5) message = " Хороший результат! Повторите материал для закрепления.";
+                else if (correctCount >= 3) message = " Неплохо, но стоит изучить уроки ещё раз.";
+                else message = " Попробуйте пройти уроки заново и вернуться к тесту.";
+                
+                app.innerHTML = `
+                    <div class="test-container">
+                        <div class="test-header">
+                            <h2> Результат теста</h2>
+                        </div>
+                        <div class="result-area">
+                            <div class="result-score">${correctCount} / ${questions.length}</div>
+                            <div style="font-size: 1.2rem; margin-bottom: 1rem;">${percentage}% правильных ответов</div>
+                            <p style="margin-bottom: 1.5rem;">${message}</p>
+                            <button class="restart-btn" onclick="restartTest()"> Пройти тест заново</button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            const q = questions[currentQuestion];
+            const selectedIndex = userAnswers[currentQuestion];
+            
+            let answersHtml = '';
+            q.answers.forEach((answer, idx) => {
+                const isSelected = (selectedIndex === idx);
+                answersHtml += `
+                    <div class="answer-option ${isSelected ? 'selected' : ''}" data-index="${idx}">
+                        ${String.fromCharCode(65+idx)}. ${answer}
+                    </div>
+                `;
+            });
+            
+            app.innerHTML = `
+                <div class="test-container">
+                    <div class="test-header">
+                        <h2> Проверь свои знания</h2>
+                        <p>Тест по созданию чат-ботов на Python</p>
+                    </div>
+                    <div class="question-area">
+                        <div class="question-text">${q.text}</div>
+                        <div id="answersList">
+                            ${answersHtml}
+                        </div>
+                    </div>
+                    <div class="test-footer">
+                        <div class="progress">Вопрос ${currentQuestion + 1} / ${questions.length}</div>
+                        <div class="score"> Счёт: ${userAnswers.filter(a => a !== null).length}</div>
+                        <button class="next-btn" id="nextBtn">${currentQuestion === questions.length - 1 ? 'Завершить' : 'Следующий →'}</button>
+                    </div>
+                </div>
+            `;
+            
+            // Прикрепляем обработчики к вариантам ответов
+            document.querySelectorAll('.answer-option').forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    const idx = parseInt(opt.dataset.index);
+                    userAnswers[currentQuestion] = idx;
+                    render();
+                });
+            });
+            
+            // Кнопка "Далее / Завершить"
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                if (userAnswers[currentQuestion] === null) {
+                    alert('Пожалуйста, выберите ответ!');
+                    return;
+                }
+                
+                if (currentQuestion === questions.length - 1) {
+                    testFinished = true;
+                    render();
+                } else {
+                    currentQuestion++;
+                    render();
+                }
+            });
+        }
+        
+        function restartTest() {
+            currentQuestion = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            testFinished = false;
+            render();
+        }
+        
+        render();
+    </script>
+</body>
+</html>

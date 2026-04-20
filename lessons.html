@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Уроки - Создание чат-ботов на Python</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo"> Python ChatBot Course</div>
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="lessons.html" class="active">Уроки</a></li>
+                <li><a href="test.html">Тест</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="lesson-header">
+            <h1> Урок 1: Первый телеграм-бот</h1>
+            <p>Научимся создавать простого бота, который отвечает на сообщения</p>
+        </section>
+
+        <div class="lesson-content">
+            <div class="theory">
+                <h2>Теория</h2>
+                <p>Для создания телеграм-бота нам понадобится библиотека <strong>python-telegram-bot</strong>.</p>
+                
+                <h3>Шаг 1: Установка</h3>
+                <div class="code-block">
+                    <pre>pip install python-telegram-bot</pre>
+                </div>
+
+                <h3>Шаг 2: Создание бота в Telegram</h3>
+                <p>Найдите в Telegram <strong>@BotFather</strong> и создайте нового бота командой <code>/newbot</code>. Вы получите токен — ключ доступа к вашему боту.</p>
+
+                <h3>Шаг 3: Базовый код бота</h3>
+                <div class="code-block">
+                    <pre>from telegram import Update
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
+
+TOKEN = "ВАШ_ТОКЕН"
+
+async def start(update: Update, context):
+    await update.message.reply_text("Привет! Я бот!")
+
+async def echo(update: Update, context):
+    await update.message.reply_text(update.message.text)
+
+app = Application.builder().token(TOKEN).build()
+app.add_handler(CommandHandler("start", start))
+app.add_handler(MessageHandler(filters.TEXT, echo))
+
+print("Бот запущен...")
+app.run_polling()</pre>
+                </div>
+
+                <h3>Как это работает?</h3>
+                <ul>
+                    <li><code>CommandHandler</code> — обрабатывает команды (например, /start)</li>
+                    <li><code>MessageHandler</code> — обрабатывает текстовые сообщения</li>
+                    <li>Бот отвечает тем же сообщением, что вы ему отправили</li>
+                </ul>
+            </div>
+
+            <div class="interactive">
+                <h2> Интерактивный редактор кода</h2>
+                <p>Попробуйте изменить код бота прямо здесь!</p>
+                
+                <div class="code-editor">
+                    <label>Редактируемый код (простой пример):</label>
+                    <textarea id="codeInput" rows="12">from telegram import Update
+from telegram.ext import Application, CommandHandler
+
+TOKEN = "ВАШ_ТОКЕН"
+
+async def start(update: Update, context):
+    await update.message.reply_text("Добро пожаловать в моего бота!")
+
+async def help_command(update: Update, context):
+    await update.message.reply_text("Доступные команды: /start, /help")
+
+app = Application.builder().token(TOKEN).build()
+app.add_handler(CommandHandler("start", start))
+app.add_handler(CommandHandler("help", help_command))
+
+print("Бот готов к работе!")
+app.run_polling()</textarea>
+                    <button id="runCodeBtn" class="btn-run">▶ Запустить (имитация)</button>
+                </div>
+                
+                <div id="outputArea" class="output-area">
+                    <strong> Результат выполнения:</strong>
+                    <pre id="output">Бот готов к работе!</pre>
+                </div>
+                
+                <div class="tip">
+                     <strong>Совет:</strong> В реальном проекте вместо имитации вы запустите этого бота на сервере (например, на PythonAnywhere или VPS).
+                </div>
+            </div>
+        </div>
+
+        <div class="next-lesson">
+            <a href="test.html" class="btn-primary">Перейти к тесту →</a>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 | Обучающий курс по созданию чат-ботов на Python</p>
+    </footer>
+
+    <script>
+        document.getElementById('runCodeBtn').addEventListener('click', function() {
+            const code = document.getElementById('codeInput').value;
+            const outputPre = document.getElementById('output');
+            
+            outputPre.innerHTML = '🔄 Имитация выполнения...\n\n';
+            
+            setTimeout(() => {
+                if (code.includes('start') && code.includes('help')) {
+                    outputPre.innerHTML = ' Код синтаксически верен!\n\n' +
+                        '📋 Логи выполнения:\n' +
+                        '- Бот успешно инициализирован\n' +
+                        '- Добавлен обработчик команды /start\n' +
+                        '- Добавлен обработчик команды /help\n' +
+                        '- Бот запущен и ожидает сообщения\n\n' +
+                        '💡 Реальный запуск потребует токен от @BotFather и сервер.';
+                } else {
+                    outputPre.innerHTML = ' В коде отсутствуют необходимые обработчики команд.\n' +
+                        'Убедитесь, что у вас есть start и help команды.';
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
